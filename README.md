@@ -1,3 +1,1 @@
-# Ecommerce-Follow-Along
-
-
+# Ecommerce-Follow-Alongi
