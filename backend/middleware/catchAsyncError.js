@@ -1,6 +1,2 @@
-const catchAsyncError=(thefunc)=>(req,res,next)=>{
-
-    Promise.resolve(thefunc(req,res,next).catch(next))
-}
-
-module.exports={catchAsyncError}
+module.exports = func => (req, res, next) =>
+    Promise.resolve(func(req, res, next)).catch(next);

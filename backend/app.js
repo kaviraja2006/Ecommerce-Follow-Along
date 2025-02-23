@@ -1,12 +1,31 @@
-const express= require("express")
-const app=express()
+const express = require("express");
+const cors = require("cors")
+const app = express();
+app.use(express.json());
+const ErrorMiddleware= require("./middleware/error")
 
-app.use(express.json())
+app.use(cors({
+  origin:"*",
+  credentials:true
+}))
+
+const {userRoute} = require('./controllers/userRoute');
+
+const productRouter = require("./controllers/productRoutes");
 
 
-const{catchAsyncError} =require("./middleware/catchAsyncError")
-const {ErrorHandler} =require("./utils/errorHandler")
-const errMiddleware =require("./middleware/error")
 
-app.use(errMiddleware)
-module.exports={app}
+app.get("/test", async (req, res) => {
+  res.send("hello.....");
+});
+
+
+app.use("/user",userRoute)
+app.use("/product", productRouter);
+
+
+
+
+app.use(ErrorMiddleware)
+
+module.exports = { app };
