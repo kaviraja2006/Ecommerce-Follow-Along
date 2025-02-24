@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -132,5 +133,9 @@ function Login(props) {
     </>
   );
 }
+Login.propTypes = {
+  x: PropTypes.func.isRequired,
+};
 
 export default Login;
+

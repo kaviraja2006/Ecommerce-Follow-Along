@@ -1,4 +1,4 @@
-
+import PropTypes from 'prop-types';
 
 export default function ProductCard({ name, image, description, price }) {
   return (
@@ -21,3 +21,10 @@ export default function ProductCard({ name, image, description, price }) {
     </div>
   );
 }
+
+ProductCard.propTypes = {
+  name: PropTypes.string.isRequired,
+  image: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  price: PropTypes.number.isRequired,
+};
