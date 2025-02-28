@@ -1,0 +1,19 @@
+meta {
+  name: signup
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8080/user/signup
+  body: none
+  auth: none
+}
+
+tests {
+  {
+    "email":"mkvr2006@gmail.com",
+    "password":"kaviraja6002",
+    "name":"kaviraja"
+  }
+}
