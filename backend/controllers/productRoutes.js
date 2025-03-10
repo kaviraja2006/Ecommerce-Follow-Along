@@ -1,24 +1,25 @@
 let express=require("express")
-const ProductModel  = require("../models/productModel");
+const ProductModel  = require("../model/productModel");
 const catchAsyncError = require("../middleware/catchAsyncError");
-const Errorhadler=require("../utils/errorHadler")
+const Errorhadler=require("../utils/errorhadler")
 const productRouter= express.Router()
-const UserModel = require("../models/userModel")
+const UserModel = require("../model/userModel")
 const {productUpload}=require("../middleware/multer")
 let path=require('path')
 const mongoose=require("mongoose")
-
+const auth=require("../middleware/auth")
 
 productRouter.post("/create-product",productUpload.array("images",10), catchAsyncError(async(req, res, next)=>{
     const { email,name, description,category,tags,price,stock} = req.body;
 
     const images =req.files.map((file)=>path.basename(file.path));
-    console.log(email,name, description,category,tags,price,images);
+    console.log(email,name, description,category,tags,price,images,"////");
 
     if (!email ||!name ||!description ||!category ||!tags ||!price ||!images ||!stock) {
        return  next(new Errorhadler("All fields are required",400))
     }
     let user=await UserModel.findOne({email})
+
     console.log(email)
     if(!user){
         return next(new Errorhadler("user is not exist",404))
@@ -38,6 +39,13 @@ productRouter.get("/allproduct", catchAsyncError(async(req, res, next)=>{
      let allProduct = await ProductModel.find()
      res.status(200).json({status:true,message:allProduct})
 }))
+
+productRouter.get("/individualproduct/:id", catchAsyncError(async(req, res, next)=>{
+    let id=req.params.id
+    let product = await ProductModel.findById(id)
+    res.status(200).json({status:true,message:product})
+}))
+
 
 
 
@@ -85,6 +93,47 @@ productRouter.put("/update/:id",productUpload.array("images",10),catchAsyncError
     res.status(200).json({status:true,message:"updated successfully",data:updated})
     
 }))
+
+
+productRouter.post('/cart',auth, catchAsyncError(async (req, res, next) => {
+    const {productId, quantity } = req.body;
+    let userId=req.user_id 
+    if (!userId) {
+        return next(new Errorhadler("UserID isrequired", 400));
+    }
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+        return next(new Errorhadler("Invalid productId", 400));
+    }
+
+    if (!quantity || quantity < 1) {
+        return next(new Errorhadler("Quantity must be at least 1", 400));
+    }
+    const user = await UserModel.findById(userId);
+    if (!user) {
+        return next(new Errorhadler("User not found", 404));
+    }
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+        return next(new Errorhadler("Product not found", 404));
+    }
+    const cartItemIndex = user.cart.findIndex(
+        (item) => item.productId.toString() === productId
+    );
+
+    if (cartItemIndex > -1) {
+        user.cart[cartItemIndex].quantity += quantity;
+    } else {
+        user.cart.push({ productId, quantity });
+    }
+
+    await user.save();
+
+    res.status(200).json({
+        status: true,
+        message: "Cart updated successfully",
+        cart: user.cart,
+    });
+}));
 
 
 

@@ -1,19 +1,20 @@
 import axios from 'axios';
-import  { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IoIosAddCircleOutline } from 'react-icons/io';
-import { useLocation } from "react-router-dom";
+import { data, useLocation } from "react-router-dom";
 import { IoCloseCircleOutline } from "react-icons/io5";
-
 function CreateProduct() {
 
     const location = useLocation();
     const productData =location.state || {}
+    
     const { _id, email, name, description, category, tags, price, stock, images, edit } = productData
 
+    console.log(images)
     
     let prevImg = []
     if (images) {
-        images.forEach((ele) => (
+        images.forEach((ele, ind) => (
             prevImg.push(`http://localhost:8080/products-photo/${ele}`)
         ))
     }
@@ -43,7 +44,6 @@ function CreateProduct() {
             previewImg: prevImg || []
         });
     }, [email, name, description, category, tags, price, stock, images]);
-
    
 
     const handleDeletePrevImg =(index)=>{
@@ -67,13 +67,11 @@ function CreateProduct() {
         else if (e.target.name === "images") {
             const files = e.target.files;
             const imgUrls = Array.from(files).map(file => URL.createObjectURL(file));
-            setFormData(prevState =>{
-                return {
+            setFormData(prevState => ({
                 ...prevState,
                 images: [...prevState.images, ...files],
                 previewImg: [...prevState.previewImg, ...imgUrls]
-            }});
-
+            }));
         } else {
             setFormData(prevState => ({
                 ...prevState,
@@ -112,7 +110,7 @@ function CreateProduct() {
         }
 
         try {
-            const response = await axios.post("http://localhost:8975/product/createProduct", multiPartFormData, {
+            const response = await axios.post("http://localhost:8080/product/create-product", multiPartFormData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 },
@@ -127,7 +125,7 @@ function CreateProduct() {
 
         catch (error) {
             console.log("Error", error)
-            alert("Product is Not Created")
+            // alert("Product is Not Created")
         }
 
     };
@@ -167,7 +165,7 @@ function CreateProduct() {
         <div className='flex justify-center items-center min-h-screen bg-cover bg-center' style={{ backgroundImage: "url('https://source.unsplash.com/1600x900/?office,technology')" }}>
             <div className='w-full max-w-lg bg-white p-6 rounded-lg shadow-lg backdrop-blur-md bg-opacity-90'>
                 <h2 className='text-2xl font-bold text-gray-800 mb-6 text-center'>Create a New Product</h2>
-              {console.log(formData)}
+                {console.log(formData)}
                 <form  className='space-y-4'>
                     <div>
                         <label className='block font-medium text-gray-700'>Email</label>

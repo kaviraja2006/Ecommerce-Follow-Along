@@ -1,7 +1,7 @@
 let express=require("express")
-const UserModel = require("../models/userModel");
+const UserModel = require("../model/userModel");
 const catchAsyncError = require("../middleware/catchAsyncError");
-const Errorhadler=require("../utils/errorHadler")
+const Errorhadler=require("../utils/errorhadler")
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
 const { sendMail } =require("../utils/mail")
@@ -102,7 +102,6 @@ userRoute.post("/login",catchAsyncError(async (req, res, next) => {
     }
 
     let user = await UserModel.findOne({ email });
-    console.log(user,"9999999999999")
 
     if (!user) {
       next(new Errorhadler("Please Signup", 400));
@@ -121,13 +120,16 @@ userRoute.post("/login",catchAsyncError(async (req, res, next) => {
       }
 
       let token = jwt.sign({ id: user._id }, process.env.SECRET, {
-        expiresIn: 60 * 60 * 60 * 24 * 30,
+        expiresIn: 1000 * 60 * 60 * 60 *24,
       });
       res.cookie("accesstoken", token, {
         httpOnly: true,
-        MaxAge: "5d",
+        secure: false, 
+        sameSite: "lax"
       });
-      res.status(200).json({status:true,message:"login successful"})
+      
+
+      res.status(200).json({status:true,message:"login successful",token})
 
       
     });
