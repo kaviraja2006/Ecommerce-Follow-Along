@@ -1,4 +1,3 @@
-
 import { useState,useEffect } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import {useLocation} from "react-router-dom"
